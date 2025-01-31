@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Calculator</title>
+  </head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 10px;
+      gap: 5px;
+
+      button {
+        aspect-ratio: 1;
+        width: 40px;
+      }
+    }
+
+    .result {
+      font-size: 20px;
+      border: 2px #2b3154 solid;
+      border-radius: 5px;
+      padding: 10px;
+      width: 220px;
+      height: 20px;
+      min-height: 20px;
+      overflow: hidden;
+      position: relative;
+
+      p {
+        margin: 0;
+      }
+
+      #build {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 10px;
+        color: #2b3154;
+        font-size: 12px;
+        opacity: 0.5;
+      }
+    }
+
+    .calculator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 5px;
+      width: 100%;
+    }
+
+    .btn {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #2b3154;
+      border: 0;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+
+      &:hover {
+        background: #3c4260;
+      }
+
+      &.operator {
+        background: #ff9a8d;
+
+        &.equal {
+          grid-column: span 2;
+          aspect-ratio: auto;
+        }
+        &:hover {
+          background: #ff7b69;
+        }
+      }
+    }
+  </style>
+  <body>
+    <h1>Calculator</h1>
+
+    
+    <div class="calculator">
+      <div class="top-bar">
+        <div class="result">
+          <p id="result">0</p>
+          <p id="build"></p>
+        </div>
+        <button class="btn utility">C</button>
+      </div>
+
+      <div class="buttons">
+        <button class="btn number">1</button>
+        <button class="btn number">2</button>
+        <button class="btn number">3</button>
+        <button class="btn operator">+</button>
+        <button class="btn number">4</button>
+        <button class="btn number">5</button>
+        <button class="btn number">6</button>
+        <button class="btn operator">-</button>
+        <button class="btn number">7</button>
+        <button class="btn number">8</button>
+        <button class="btn number">9</button>
+        <button class="btn operator">/</button>
+        <button class="btn number">0</button>
+        <button class="btn operator equal">=</button>
+        <button class="btn operator">*</button>
+      </div>
+    </div>
+  </body>
+  <script>
+    const numbers = document.querySelectorAll("button.number");
+    const operators = document.querySelectorAll("button.operator");
+    const utilities = document.querySelectorAll("button.utility");
+    const resultEl = document.getElementById("result");
+    const buildEl = document.getElementById("build");
+
+    let expressions = []; // build the expressions
+    let result = 0; // store the result of the expression
+    let current = ""; // current number being typed
+    let build = ""; // build of the expression
+
+    const render = (val, el = resultEl) => {
+      el.innerText = val;
+    };
+
+    const calculate = () => {
+      build = expressions
+        .filter((exp) => exp.value !== "=")
+        .map((exp) => exp.value)
+        .join("");
+
+      if (
+        expressions[expressions.length - 1]?.type !== "operator" &&
+        expressions.length > 0
+      ) {
+        result = eval(build);
+      }
+
+      render(build, buildEl);
+    };
+
+    const mergeExpressions = () => {
+      expressions = [{ value: result, type: "number" }];
+    }
+
+    const buildExpressions = (value, type) => {
+      if (type === "number") {
+        current += value;
+        render(current);
+
+        if (expressions[expressions.length - 1]?.value === "=") {
+          expressions = [];
+          expressions.push({ value: current, type });
+        } else {
+          expressions.push({ value, type });
+        }
+      }
+
+      if (type === "operator") {
+        current = "";
+
+        let isOperatorOnFirstIndex = expressions.length === 0;
+        let isLastExpressionOperator =
+          expressions[expressions.length - 1]?.type === "operator";
+
+        if (isLastExpressionOperator) {
+          console.log("last expression is operator");
+          expressions.pop();
+        }
+
+        if (!isOperatorOnFirstIndex) {
+          expressions.push({ value, type });
+        }
+      }
+
+      calculate();
+    };
+
+    numbers.forEach((number) => {
+      number.addEventListener("click", () => {
+        buildExpressions(number.innerText, "number");
+      });
+    });
+
+    operators.forEach((operator) => {
+      operator.addEventListener("click", () => {
+        buildExpressions(operator.innerText, "operator");
+        if (operator.innerText === "=") {
+          mergeExpressions();
+          render(result);
+        }
+      });
+    });
+
+    utilities.forEach((utility) => {
+      utility.addEventListener("click", () => {
+        if (utility.innerText === "C") {
+          expressions = [];
+          current = "";
+          result = 0;
+          render(result);
+          render("", buildEl);
+        }
+      });
+    });
+  </script>
+</html>
