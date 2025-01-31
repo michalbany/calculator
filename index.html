@@ -211,6 +211,7 @@
     operators.forEach((operator) => {
       operator.addEventListener("click", () => {
         buildExpressions(operator.innerText, "operator");
+        
         if (operator.innerText === "=") {
           mergeExpressions();
           render(result);
