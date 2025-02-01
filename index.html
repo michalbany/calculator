@@ -104,7 +104,6 @@
   <body>
     <h1>Calculator</h1>
 
-    
     <div class="calculator">
       <div class="top-bar">
         <div class="result">
@@ -149,6 +148,14 @@
       el.innerText = val;
     };
 
+    const reset = () => {
+      expressions = [];
+      current = "";
+      result = 0;
+      render(result);
+      render("", buildEl);
+    };
+
     const calculate = () => {
       build = expressions
         .filter((exp) => exp.value !== "=")
@@ -167,7 +174,7 @@
 
     const mergeExpressions = () => {
       expressions = [{ value: result, type: "number" }];
-    }
+    };
 
     const buildExpressions = (value, type) => {
       const isLastExpressionEqual = expressions[expressions.length - 1]?.value === "=";
@@ -189,12 +196,10 @@
 
         const isOperatorOnFirstIndex = expressions.length === 0;
         const isLastExpressionOperator = expressions[expressions.length - 1]?.type === "operator";
-        
+
         if (isLastExpressionEqual) {
           mergeExpressions();
-        } 
-        
-        else if (isLastExpressionOperator) {
+        } else if (isLastExpressionOperator) {
           expressions.pop();
         }
 
@@ -225,13 +230,32 @@
     utilities.forEach((utility) => {
       utility.addEventListener("click", () => {
         if (utility.innerText === "C") {
-          expressions = [];
-          current = "";
-          result = 0;
-          render(result);
-          render("", buildEl);
+          reset();
         }
       });
+    });
+
+    document.addEventListener("keydown", (e) => {
+      e.preventDefault();
+      const key = e.key;
+      const isNumber = !isNaN(key);
+      const isOperator = ["+", "-", "*", "/", "=", "Enter"].includes(key);
+      const isEqualOperator = ["=", "Enter"].includes(key);
+
+      if (isNumber) {
+        buildExpressions(key, "number");
+      }
+
+      if (isOperator) {
+        buildExpressions(isEqualOperator ? "=" : key, "operator");
+        if (isEqualOperator) {
+          render(result);
+        }
+      }
+
+      if (key === "c" || key === "C") {
+        reset();
+      }
     });
   </script>
 </html>
