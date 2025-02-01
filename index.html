@@ -24,7 +24,7 @@
 
       button {
         aspect-ratio: 1;
-        width: 40px;
+        width: 55px;
       }
     }
 
@@ -34,7 +34,7 @@
       border-radius: 5px;
       padding: 10px;
       width: 220px;
-      height: 20px;
+      height: 35px;
       min-height: 20px;
       overflow: hidden;
       position: relative;
@@ -45,8 +45,8 @@
 
       #build {
         position: absolute;
-        top: 0;
-        right: 0;
+        bottom: -5px;
+        left: 0;
         padding: 10px;
         color: #2b3154;
         font-size: 12px;
@@ -170,11 +170,13 @@
     }
 
     const buildExpressions = (value, type) => {
+      const isLastExpressionEqual = expressions[expressions.length - 1]?.value === "=";
+
       if (type === "number") {
         current += value;
         render(current);
 
-        if (expressions[expressions.length - 1]?.value === "=") {
+        if (isLastExpressionEqual) {
           expressions = [];
           expressions.push({ value: current, type });
         } else {
@@ -186,11 +188,13 @@
         current = "";
 
         let isOperatorOnFirstIndex = expressions.length === 0;
-        let isLastExpressionOperator =
-          expressions[expressions.length - 1]?.type === "operator";
-
-        if (isLastExpressionOperator) {
-          console.log("last expression is operator");
+        let isLastExpressionOperator = expressions[expressions.length - 1]?.type === "operator";
+        
+        if (isLastExpressionEqual) {
+          mergeExpressions();
+        } 
+        
+        else if (isLastExpressionOperator) {
           expressions.pop();
         }
 
@@ -211,9 +215,8 @@
     operators.forEach((operator) => {
       operator.addEventListener("click", () => {
         buildExpressions(operator.innerText, "operator");
-        
+
         if (operator.innerText === "=") {
-          mergeExpressions();
           render(result);
         }
       });
