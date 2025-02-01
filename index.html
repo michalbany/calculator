@@ -187,8 +187,8 @@
       if (type === "operator") {
         current = "";
 
-        let isOperatorOnFirstIndex = expressions.length === 0;
-        let isLastExpressionOperator = expressions[expressions.length - 1]?.type === "operator";
+        const isOperatorOnFirstIndex = expressions.length === 0;
+        const isLastExpressionOperator = expressions[expressions.length - 1]?.type === "operator";
         
         if (isLastExpressionEqual) {
           mergeExpressions();
